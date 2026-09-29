@@ -31,7 +31,10 @@ export const API_READY_EVENT = 'better-citations:api-ready';
  * (Literature Graph uses it when both are installed).
  */
 export interface BetterCitationsApi {
-	/** Opens a citation link (its obsidian://cite URL) at the cited passage. */
+	/**
+	 * Opens a citation link (its obsidian://cite URL) at the cited passage; in
+	 * a new tab or not as the settings say, unless `newTab` is given.
+	 */
 	openCitation(url: string, newTab?: PaneType | boolean): Promise<void>;
 	/** Gives the title of works cited by DOI only, for hover previews (null: none). */
 	setDoiTitleProvider(provider: ((doi: string) => Promise<string | null>) | null): void;
@@ -43,9 +46,9 @@ export default class BetterCitationsPlugin extends Plugin {
 	private doiTitleProvider: ((doi: string) => Promise<string | null>) | null = null;
 
 	readonly api: BetterCitationsApi = {
-		openCitation: async (url, newTab = false) => {
+		openCitation: async (url, newTab) => {
 			const target = parseCitationUrl(url);
-			if (target) await openCitation(this.app, target, newTab, (doi) => this.index.fileForDoi(doi));
+			if (target) await openCitation(this.app, target, newTab ?? this.newTab(), (doi) => this.index.fileForDoi(doi));
 		},
 		setDoiTitleProvider: (provider) => {
 			this.doiTitleProvider = provider;
@@ -65,9 +68,9 @@ export default class BetterCitationsPlugin extends Plugin {
 		});
 
 		this.registerObsidianProtocolHandler(CITE_ACTION, (params) => {
-			void openCitation(this.app, parseCitationParams(params), false, fileForDoi);
+			void openCitation(this.app, parseCitationParams(params), this.newTab(), fileForDoi);
 		});
-		registerCitationClicks(this, fileForDoi);
+		registerCitationClicks(this, fileForDoi, () => this.settings.openInNewTab);
 		registerCitationHover(this, this.index, () => this.settings, (doi) => this.doiTitleProvider?.(doi) ?? Promise.resolve(null));
 		registerBrokenLinkMarks(this, this.index);
 
@@ -176,6 +179,11 @@ export default class BetterCitationsPlugin extends Plugin {
 				);
 			}),
 		);
+	}
+
+	/** Where a citation link opens by default: a new tab, or the current one (a setting). */
+	private newTab(): PaneType | false {
+		return this.settings.openInNewTab ? 'tab' : false;
 	}
 
 	/** Copies a citation link to the selected passage to the clipboard. */

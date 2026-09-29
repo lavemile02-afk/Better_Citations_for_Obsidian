@@ -60,11 +60,14 @@ function citationUrlAt(evt: MouseEvent): string | null {
  * Opens citation links clicked inside Obsidian directly, instead of letting
  * Obsidian hand the obsidian:// URL to the operating system, which sends it
  * back to the protocol handler. This keeps the click in the current vault and
- * lets Ctrl/Cmd-click and middle-click open the note in a new tab.
+ * lets Ctrl/Cmd-click and middle-click open the note in a new tab (a plain
+ * click too, when the setting says so).
  */
 export function registerCitationClicks(
 	plugin: Plugin,
 	fileForDoi: (doi: string) => TFile | null,
+	/** Whether a plain click opens the cited note in a new tab (a setting). */
+	newTabByDefault: () => boolean,
 ): void {
 	const onClick = (evt: MouseEvent) => {
 		if (evt.button !== 0 && evt.button !== 1) return;
@@ -73,7 +76,8 @@ export function registerCitationClicks(
 		if (!target) return;
 		evt.preventDefault();
 		evt.stopImmediatePropagation();
-		const newLeaf: PaneType | boolean = evt.button === 1 ? 'tab' : Keymap.isModEvent(evt);
+		const newLeaf: PaneType | boolean =
+			evt.button === 1 ? 'tab' : Keymap.isModEvent(evt) || (newTabByDefault() ? 'tab' : false);
 		void openCitation(plugin.app, target, newLeaf, fileForDoi);
 	};
 	// The editor starts a mouse selection on mousedown; if it saw the press, it

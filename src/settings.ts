@@ -7,6 +7,8 @@ export interface BetterCitationsSettings {
 	literatureFolder: string;
 	/** Language of the citations the plugin writes ("et al." forms, "&" or "et"). */
 	citationLanguage: CitationLanguage;
+	/** A clicked citation link opens the cited note in a new tab. */
+	openInNewTab: boolean;
 	/** Property holding a work's in-text citation, e.g. "(Author et al., 2016)". */
 	citationTextProperty: string;
 	/** Property holding a work's authors, as "Family, I., Family, I.". */
@@ -36,6 +38,7 @@ export interface BetterCitationsSettings {
 export const DEFAULT_SETTINGS: BetterCitationsSettings = {
 	literatureFolder: 'Documents',
 	citationLanguage: 'en',
+	openInNewTab: true,
 	citationTextProperty: 'Citation_texte',
 	authorsProperty: 'Auteurs',
 	yearProperty: 'Annee',
@@ -84,6 +87,11 @@ export class BetterCitationsSettingTab extends PluginSettingTab {
 					key: 'citationLanguage',
 					options: { en: 'English', fr: 'French' },
 				},
+			},
+			{
+				name: 'Open citations in a new tab',
+				desc: 'A clicked citation link opens the cited note in a new tab, so the text you are writing stays open. Off: in the same tab; Ctrl/Cmd-click or middle-click still opens a new tab.',
+				control: { type: 'toggle', key: 'openInNewTab' },
 			},
 			{
 				type: 'group',
