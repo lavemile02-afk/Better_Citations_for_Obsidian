@@ -3,6 +3,7 @@ import { parseCitationUrl } from './citation';
 import { citationText } from './citationLink';
 import type { CitationIndex } from './citationIndex';
 import { citationLinkAt } from './clicks';
+import { isNumberLabel } from './numbers';
 import { findPassage, TextRange } from './passage';
 import type { BetterCitationsSettings } from './settings';
 
@@ -10,6 +11,9 @@ import type { BetterCitationsSettings } from './settings';
 const CONTEXT = 240;
 /** Longest passage shown whole; longer ones keep their start and end. */
 const MAX_PASSAGE = 700;
+/** Milliseconds before the preview of a link opens: at once, or after a pause over a superscript number. */
+const HOVER_WAIT = 300;
+const NUMBER_HOVER_WAIT = 1500;
 
 /** Markdown made readable as plain text: no marks, tags, link syntax or extra spaces. */
 export function plainText(markdown: string): string {
@@ -55,7 +59,10 @@ export function passageExcerpt(text: string, range: TextRange): { before: string
 /**
  * Hover previews of citation links, like Obsidian's page previews: the cited
  * work and the passage in its context. In the reading view they appear on
- * hover; in the editor, with Ctrl/Cmd held, as for Obsidian's own links.
+ * hover; in the editor, with Ctrl/Cmd held, as for Obsidian's own links. A
+ * superscript number (a note that is not literature) says nothing by itself:
+ * resting the pointer on it opens its preview, which names the note, in both
+ * views and without Ctrl/Cmd.
  * For a work cited by DOI only, `doiTitle` may know its title (another plugin,
  * such as Literature Graph, can provide it); the plugin itself makes no
  * network request.
@@ -73,11 +80,12 @@ export function registerCitationHover(
 		const el = evt.target instanceof Element ? evt.target : null;
 		const found = el ? citationLinkAt(el) : null;
 		if (!found || found.element === target) return;
-		if (found.inEditor && !Keymap.isModEvent(evt)) return;
+		const numbered = isNumberLabel(found.element.textContent ?? '');
+		if (found.inEditor && !numbered && !Keymap.isModEvent(evt)) return;
 		const citation = parseCitationUrl(found.url);
 		if (!citation) return;
 		target = found.element;
-		const popover = new HoverPopover(parent, found.element, 300);
+		const popover = new HoverPopover(parent, found.element, numbered && !Keymap.isModEvent(evt) ? NUMBER_HOVER_WAIT : HOVER_WAIT);
 		popover.register(() => {
 			if (target === found.element) target = null;
 		});

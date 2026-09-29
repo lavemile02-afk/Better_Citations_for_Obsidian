@@ -19,6 +19,12 @@ export interface BetterCitationsSettings {
 	titleProperty: string;
 	/** Always use the note name as the citation text. */
 	useNoteNameAsCitation: boolean;
+	/**
+	 * Text of the links to notes that are not literature (outside the
+	 * literature folder, without a citation text property): "number", a
+	 * superscript number (¹, ²…), or "name", the note name.
+	 */
+	otherNotesCitation: string;
 	/** Property holding a work's DOI, used to recognize works cited by DOI. */
 	doiProperty: string;
 	/** Rewrite citation links when the cited note is renamed. */
@@ -36,6 +42,7 @@ export const DEFAULT_SETTINGS: BetterCitationsSettings = {
 	referenceProperty: 'Citation',
 	titleProperty: 'Titre',
 	useNoteNameAsCitation: false,
+	otherNotesCitation: 'number',
 	doiProperty: 'DOI',
 	updateLinksOnRename: true,
 	highlightSeconds: 5,
@@ -111,6 +118,15 @@ export class BetterCitationsSettingTab extends PluginSettingTab {
 						name: 'Always use the note name',
 						desc: 'Use the name of the cited note as the citation text, ignoring the properties above.',
 						control: { type: 'toggle', key: 'useNoteNameAsCitation' },
+					},
+					{
+						name: 'Citations of other notes',
+						desc: 'Text of the links to notes that are not literature (outside the literature folder, without a citation text property), such as course or field notes. Superscript number: ¹, ², in the order the notes are first cited, renumbered when you paste a link or with "Renumber citation numbers"; hover the number to see the note\'s name. Note name: the name of the note.',
+						control: {
+							type: 'dropdown',
+							key: 'otherNotesCitation',
+							options: { number: 'Superscript number (¹, ²…)', name: 'Note name' },
+						},
 					},
 					{
 						name: 'DOI property',

@@ -1,12 +1,13 @@
 import { Editor, Events, MarkdownFileInfo, MarkdownView, Notice, PaneType, Plugin, TFile } from 'obsidian';
 import { CitationCheckModal, checkCitations } from './check';
 import { CitationIndex } from './citationIndex';
-import { CITE_ACTION, parseCitationParams, parseCitationUrl } from './citation';
+import { CITE_ACTION, CITE_URL_PREFIX, parseCitationParams, parseCitationUrl } from './citation';
 import { buildCitationLink, citationUrl } from './citationLink';
 import { registerCitationClicks } from './clicks';
 import { registerCitationHover } from './hover';
 import { registerBrokenLinkMarks } from './decorations';
 import { InsertCitationModal } from './insertCitation';
+import { isNumberLabel, renumberChanges, UNNUMBERED } from './numbers';
 import { setHighlightDuration } from './highlight';
 import { citationLinksIn, withCanonicalCitationLinks, withoutCitationLinks } from './links';
 import { findExactPassages, findPassage } from './passage';
@@ -118,6 +119,11 @@ export default class BetterCitationsPlugin extends Plugin {
 			editorCallback: (editor) => this.updateInTextCitations(editor),
 		});
 		this.addCommand({
+			id: 'renumber-citations',
+			name: 'Renumber citation numbers',
+			editorCallback: (editor) => this.renumberCitations(editor, true),
+		});
+		this.addCommand({
 			id: 'check-citations',
 			name: 'Check citations in this note',
 			checkCallback: (checking) => {
@@ -147,6 +153,17 @@ export default class BetterCitationsPlugin extends Plugin {
 				return true;
 			},
 		});
+		// A pasted citation link to a note that is not literature gets its number.
+		this.registerEvent(
+			this.app.workspace.on('editor-paste', (evt, editor) => {
+				if (evt.defaultPrevented) return;
+				const pasted = evt.clipboardData?.getData('text/plain') ?? '';
+				if (this.settings.otherNotesCitation !== 'number' || !pasted.includes(CITE_URL_PREFIX) || !pasted.includes(UNNUMBERED)) return;
+				evt.preventDefault();
+				editor.replaceSelection(pasted);
+				this.renumberCitations(editor, false);
+			}),
+		);
 		this.registerEvent(
 			this.app.workspace.on('editor-menu', (menu, editor, info) => {
 				if (!editor.somethingSelected() || !info.file) return;
@@ -259,6 +276,27 @@ export default class BetterCitationsPlugin extends Plugin {
 		if (messages.length > 0) new Notice(messages.join('\n\n'), 15000);
 	}
 
+	/**
+	 * Numbers the citation links of the note that are superscript numbers, in
+	 * the order their notes are first cited (a note cited again keeps its
+	 * number), in one undoable change.
+	 */
+	renumberCitations(editor: Editor, notify: boolean) {
+		const changes = renumberChanges(editor.getValue(), (link) => {
+			const { note, doi } = link.target;
+			const file = (note ? resolveCitedNote(this.app, note) : null) ?? (doi ? this.index.fileForDoi(doi) : null);
+			return file?.path ?? (doi ? `doi:${doi.toLowerCase()}` : (note ?? null));
+		});
+		if (changes.length > 0) {
+			editor.transaction({
+				changes: changes.map((c) => ({ from: editor.offsetToPos(c.from), to: editor.offsetToPos(c.to), text: c.text })),
+			});
+		}
+		if (notify) {
+			new Notice(changes.length === 0 ? 'The citation numbers are already in order.' : `Renumbered ${changes.length} citation${changes.length > 1 ? 's' : ''}.`);
+		}
+	}
+
 	/** Rewrites the in-text citations of the active note so that they follow APA 7. */
 	updateInTextCitations(editor: Editor) {
 		const fileForDoi = (doi: string) => this.index.fileForDoi(doi);
@@ -289,6 +327,8 @@ export default class BetterCitationsPlugin extends Plugin {
 		let skipped = 0;
 		const plain = (t: string) => t.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase();
 		for (const link of citationLinksIn(text)) {
+			// Superscript numbers (notes that are not literature) are not APA citations.
+			if (isNumberLabel(link.text)) continue;
 			const { note, doi } = link.target;
 			const file = (note ? resolveCitedNote(this.app, note) : null) ?? (doi ? this.index.fileForDoi(doi) : null);
 			const label = file ? labels.get(file.path) : undefined;

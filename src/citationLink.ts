@@ -1,5 +1,6 @@
 import { App, TFile } from 'obsidian';
 import { CITE_URL_PREFIX, CitationTarget } from './citation';
+import { UNNUMBERED } from './numbers';
 import { findExactPassages } from './passage';
 import type { BetterCitationsSettings } from './settings';
 
@@ -65,6 +66,17 @@ export function citationText(app: App, file: TFile, settings: BetterCitationsSet
 }
 
 /**
+ * Whether a note is literature: in the literature folder (any note when the
+ * folder is the whole vault), or with a citation text property.
+ */
+export function isLiteratureWork(app: App, file: TFile, settings: BetterCitationsSettings): boolean {
+	const folder = settings.literatureFolder.replace(/\/+$/, '');
+	if (folder === '' || file.path.startsWith(`${folder}/`)) return true;
+	const stored: unknown = app.metadataCache.getFileCache(file)?.frontmatter?.[settings.citationTextProperty];
+	return typeof stored === 'string' && stored.trim() !== '';
+}
+
+/**
  * A selected passage without the marks that passage search ignores anyway
  * (emphasis marks, HTML tags), so that links stay readable.
  */
@@ -88,7 +100,9 @@ export function noteParam(app: App, file: TFile): string {
 /**
  * Builds a citation link to the passage `text.slice(from, to)` of `file`:
  * `([Author et al., 2016](obsidian://cite?note=...&qe=...&q=...))`, with the
- * parentheses outside the link so that only the citation is clickable.
+ * parentheses outside the link so that only the citation is clickable. A note
+ * that is not literature is cited with a superscript number instead, "⁰"
+ * until the citing note is renumbered: `[⁰](obsidian://cite?...)`.
  */
 export function buildCitationLink(
 	app: App,
@@ -115,8 +129,10 @@ export function buildCitationLink(
 		occ = best + 1;
 	}
 
+	const url = citationUrl({ note: noteParam(app, file), occ, qe, q });
+	if (settings.otherNotesCitation === 'number' && !isLiteratureWork(app, file, settings)) return `[${UNNUMBERED}](${url})`;
 	const label = citationText(app, file, settings).replace(/([[\]])/g, '\\$1');
-	return `([${label}](${citationUrl({ note: noteParam(app, file), occ, qe, q })}))`;
+	return `([${label}](${url}))`;
 }
 
 /**
