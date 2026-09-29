@@ -1,0 +1,57 @@
+/* Better Citations styles. */
+
+/* Cited passage, highlighted for a few seconds when a citation link opens it
+   in the reading view. */
+::highlight(better-citations-passage) {
+	background-color: var(--text-highlight-bg);
+	color: var(--text-normal);
+}
+
+/* Hover preview of a citation link. */
+.better-citations-hover {
+	padding: var(--size-4-3) var(--size-4-4);
+	max-width: 480px;
+}
+
+.better-citations-hover-title {
+	font-weight: var(--font-semibold);
+}
+
+.better-citations-hover-subtitle {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	margin-bottom: var(--size-4-2);
+}
+
+.better-citations-hover-excerpt {
+	margin: 0;
+	font-size: var(--font-ui-small);
+	line-height: var(--line-height-normal);
+}
+
+.better-citations-hover-excerpt mark {
+	background-color: var(--text-highlight-bg);
+	color: var(--text-normal);
+}
+
+.better-citations-hover-status {
+	margin-top: var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.better-citations-hover-status.is-error {
+	color: var(--text-error);
+}
+
+/* A citation is not an external link for the reader: no "external link" icon. */
+a.external-link[href^="obsidian://cite"]::after {
+	display: none;
+}
+
+/* A citation link whose work cannot be found (no note, no DOI). */
+.better-citations-cite-broken,
+a.external-link.better-citations-cite-broken {
+	color: var(--text-error);
+	text-decoration-color: var(--text-error);
+}
