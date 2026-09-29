@@ -60,13 +60,17 @@ The text of the link comes from the work's properties:
 
 The property names, and the language of the citation ("Smith & Jones" or "Smith et Jones"), can be changed in the plugin settings.
 
+### Citing notes that are not literature
+
+A citation link to a note that is not literature (outside the literature folder, without a citation text property), such as a course or field note, reads as a small superscript number, like a footnote call: `[¹](obsidian://cite?…)`, without parentheses. Notes are numbered in the order they are first cited, and a note cited again keeps its number. A copied link reads `⁰` until it is pasted: pasting it numbers the links of the note. **Renumber citation numbers** puts the numbers back in order after citations are moved or removed. Resting the pointer on a number for a moment opens its preview, which names the note and shows the passage (in the reading view and in the editor, without Ctrl/Cmd). **Citations of other notes**, in the settings, can give these links the note's name instead.
+
 ### Citing a whole work
 
 **Insert citation** lists the works of the literature folder (search by author, year or title words) and inserts a citation link to the chosen work at the cursor; the link opens the work at the beginning. **Copy reference of this work** copies the full reference of the active note's work, in the citation language.
 
 ### Opening a citation link
 
-Clicking a citation link opens the note and selects the passage (editing view) or highlights it for a few seconds (reading view). Ctrl/Cmd-click or middle-click opens it in a new tab. The passage is found even if line breaks, hyphenation, emphasis or HTML tags differ; if it was changed since, the closest text is shown with a notice.
+Clicking a citation link opens the note, in a new tab, and selects the passage (editing view) or highlights it for a few seconds (reading view). With **Open citations in a new tab** off, a click opens it in the same tab, and Ctrl/Cmd-click or middle-click in a new tab. The passage is found even if line breaks, hyphenation, emphasis or HTML tags differ; if it was changed since, the closest text is shown with a notice.
 
 **Previews.** Hovering a citation link shows the cited work and the passage in its context, like Obsidian's page previews (in the editor, hold Ctrl/Cmd, as for Obsidian's own links). A citation link whose work cannot be found (no note and no DOI) is shown in the error color.
 
