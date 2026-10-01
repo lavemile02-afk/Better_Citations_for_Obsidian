@@ -14,6 +14,7 @@ import { findExactPassages, findPassage } from './passage';
 import { apaWorkOf, buildReferenceList, citedWorks, inTextCitations, localizeReference } from './references';
 import { updateLinksAfterRename } from './rename';
 import { openCitation, resolveCitedNote } from './navigation';
+import { propertyValue } from './properties';
 import {
 	DEFAULT_SETTINGS,
 	BetterCitationsSettings,
@@ -107,7 +108,7 @@ export default class BetterCitationsPlugin extends Plugin {
 			name: 'Copy reference of this work',
 			checkCallback: (checking) => {
 				const file = this.app.workspace.getActiveFile();
-				const stored: unknown = file ? this.app.metadataCache.getFileCache(file)?.frontmatter?.[this.settings.referenceProperty] : null;
+				const stored = file ? propertyValue(this.app.metadataCache.getFileCache(file)?.frontmatter, this.settings.referenceProperty) : null;
 				if (typeof stored !== 'string' || !stored.trim()) return false;
 				if (!checking) {
 					void navigator.clipboard.writeText(localizeReference(stored.trim(), this.settings.citationLanguage));

@@ -6,6 +6,7 @@ import { citationLinkAt } from './clicks';
 import { isNumberLabel } from './numbers';
 import { findPassage, TextRange } from './passage';
 import type { BetterCitationsSettings } from './settings';
+import { propertyValue } from './properties';
 
 /** Characters of context shown around a passage. */
 const CONTEXT = 240;
@@ -98,7 +99,7 @@ export function registerCitationHover(
 		const work = index.resolve(citation);
 		if (work.kind === 'note') {
 			const file: TFile = work.file;
-			const title: unknown = plugin.app.metadataCache.getFileCache(file)?.frontmatter?.[s.titleProperty];
+			const title = propertyValue(plugin.app.metadataCache.getFileCache(file)?.frontmatter, s.titleProperty);
 			box.createDiv({ cls: 'better-citations-hover-title', text: citationText(plugin.app, file, s) });
 			box.createDiv({ cls: 'better-citations-hover-subtitle', text: typeof title === 'string' ? title : file.basename });
 			if (!citation.q) return;

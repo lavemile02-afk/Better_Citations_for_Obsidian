@@ -36,17 +36,17 @@ export interface BetterCitationsSettings {
 }
 
 export const DEFAULT_SETTINGS: BetterCitationsSettings = {
-	literatureFolder: 'Documents',
+	literatureFolder: 'Literature',
 	citationLanguage: 'en',
 	openInNewTab: true,
-	citationTextProperty: 'Citation_texte',
-	authorsProperty: 'Auteurs',
-	yearProperty: 'Annee',
-	referenceProperty: 'Citation',
-	titleProperty: 'Titre',
+	citationTextProperty: 'citation-text',
+	authorsProperty: 'authors',
+	yearProperty: 'year',
+	referenceProperty: 'citation',
+	titleProperty: 'title',
 	useNoteNameAsCitation: false,
 	otherNotesCitation: 'number',
-	doiProperty: 'DOI',
+	doiProperty: 'doi',
 	updateLinksOnRename: true,
 	highlightSeconds: 5,
 };
@@ -76,7 +76,7 @@ export class BetterCitationsSettingTab extends PluginSettingTab {
 				control: {
 					type: 'folder',
 					key: 'literatureFolder',
-					placeholder: 'Documents',
+					placeholder: 'Literature',
 				},
 			},
 			{
@@ -100,27 +100,27 @@ export class BetterCitationsSettingTab extends PluginSettingTab {
 					{
 						name: 'Citation text property',
 						desc: 'Property that holds the in-text citation of a work, such as "(Smith et al., 2020)". Copied citation links use it as their text.',
-						control: { type: 'text', key: 'citationTextProperty', placeholder: 'Citation_texte' },
+						control: { type: 'text', key: 'citationTextProperty', placeholder: 'citation-text' },
 					},
 					{
 						name: 'Authors property',
 						desc: 'Property that holds the authors, as "Family, I., Family, I.". Used to build the citation text when the citation text property is empty.',
-						control: { type: 'text', key: 'authorsProperty', placeholder: 'Auteurs' },
+						control: { type: 'text', key: 'authorsProperty', placeholder: 'authors' },
 					},
 					{
 						name: 'Year property',
 						desc: 'Property that holds the year of publication.',
-						control: { type: 'text', key: 'yearProperty', placeholder: 'Annee' },
+						control: { type: 'text', key: 'yearProperty', placeholder: 'year' },
 					},
 					{
 						name: 'Reference property',
 						desc: 'Property that holds the full reference of a work, in APA style. Used by "Insert reference list".',
-						control: { type: 'text', key: 'referenceProperty', placeholder: 'Citation' },
+						control: { type: 'text', key: 'referenceProperty', placeholder: 'citation' },
 					},
 					{
 						name: 'Title property',
 						desc: 'Property that holds the title. Used to build a short reference when the reference property is empty.',
-						control: { type: 'text', key: 'titleProperty', placeholder: 'Titre' },
+						control: { type: 'text', key: 'titleProperty', placeholder: 'title' },
 					},
 					{
 						name: 'Always use the note name',

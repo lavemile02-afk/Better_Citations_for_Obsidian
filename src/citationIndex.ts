@@ -3,6 +3,7 @@ import { CITE_URL_PREFIX, CitationTarget } from './citation';
 import { CitationLink, citationLinksIn } from './links';
 import { resolveCitedNote } from './navigation';
 import type { BetterCitationsSettings } from './settings';
+import { propertyValue } from './properties';
 
 /** What a citation points to: a note of the vault, a DOI outside it, or nothing. */
 export type CitedWork =
@@ -100,7 +101,7 @@ export class CitationIndex extends Events {
 	}
 
 	private doiOf(file: TFile, text: string): string | null {
-		const value: unknown = this.app.metadataCache.getFileCache(file)?.frontmatter?.[this.settings().doiProperty];
+		const value = propertyValue(this.app.metadataCache.getFileCache(file)?.frontmatter, this.settings().doiProperty);
 		if (typeof value === 'string' && value.trim()) return normalizeDoi(value);
 		// Without the property, the note's own DOI is the first one near its
 		// start, before any reference list (whose DOIs are other works').

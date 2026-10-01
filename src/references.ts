@@ -4,6 +4,7 @@ import { citationText, familyNames } from './citationLink';
 import { citationLinksIn } from './links';
 import { resolveCitedNote } from './navigation';
 import type { CitationLanguage, BetterCitationsSettings } from './settings';
+import { propertyValue } from './properties';
 
 /**
  * Reference lists in APA 7th edition style, from the reference property of
@@ -113,7 +114,7 @@ export function citedWorks(
 export function apaWorkOf(app: App, file: TFile, settings: BetterCitationsSettings): ApaWork {
 	const fm = app.metadataCache.getFileCache(file)?.frontmatter ?? {};
 	const read = (key: string): string => {
-		const value: unknown = fm[key];
+		const value = propertyValue(fm, key);
 		return typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
 	};
 	return {
@@ -166,12 +167,12 @@ export function buildReferenceList(
 	});
 	const references = sorted.map((file) => {
 		const fm = app.metadataCache.getFileCache(file)?.frontmatter ?? {};
-		const stored: unknown = fm[settings.referenceProperty];
+		const stored = propertyValue(fm, settings.referenceProperty);
 		const work = works.get(file.path);
 		let reference =
 			typeof stored === 'string' && stored.trim()
 				? localizeReference(stored.trim(), settings.citationLanguage)
-				: `${(fm[settings.authorsProperty] as string | undefined) ?? file.basename} (${work?.year || noDate}). ${work?.title ?? file.basename}.`;
+				: `${(propertyValue(fm, settings.authorsProperty) as string | undefined) ?? file.basename} (${work?.year || noDate}). ${work?.title ?? file.basename}.`;
 		const letter = citations.get(file.path)?.letter;
 		if (letter) {
 			reference = reference.replace(/\((\d{4}|s\.d\.|n\.d\.)\)/, (_m, year: string) =>

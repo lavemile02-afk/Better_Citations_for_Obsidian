@@ -2,6 +2,7 @@ import { App, Editor, FuzzySuggestModal, TFile } from 'obsidian';
 import { citationText, citationUrl, noteParam } from './citationLink';
 import type { CitationIndex } from './citationIndex';
 import type { BetterCitationsSettings } from './settings';
+import { propertyValue } from './properties';
 
 interface Choice {
 	file: TFile;
@@ -30,7 +31,7 @@ export class InsertCitationModal extends FuzzySuggestModal<Choice> {
 			.getMarkdownFiles()
 			.filter((file) => this.index.isLiterature(file))
 			.map((file) => {
-				const title: unknown = this.app.metadataCache.getFileCache(file)?.frontmatter?.[this.settings.titleProperty];
+				const title = propertyValue(this.app.metadataCache.getFileCache(file)?.frontmatter, this.settings.titleProperty);
 				return {
 					file,
 					citation: citationText(this.app, file, this.settings),

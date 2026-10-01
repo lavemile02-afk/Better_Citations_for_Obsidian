@@ -3,6 +3,7 @@ import { CITE_URL_PREFIX, CitationTarget } from './citation';
 import { UNNUMBERED } from './numbers';
 import { findExactPassages } from './passage';
 import type { BetterCitationsSettings } from './settings';
+import { propertyValue } from './properties';
 
 /** Selections up to this many words are cited whole in `q`. */
 const MAX_WORDS_IN_Q = 15;
@@ -45,7 +46,7 @@ export function citationText(app: App, file: TFile, settings: BetterCitationsSet
 	if (settings.useNoteNameAsCitation) return file.basename;
 	const frontmatter = app.metadataCache.getFileCache(file)?.frontmatter ?? {};
 	const read = (key: string): string => {
-		const value: unknown = frontmatter[key];
+		const value = propertyValue(frontmatter, key);
 		return typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
 	};
 
@@ -72,7 +73,7 @@ export function citationText(app: App, file: TFile, settings: BetterCitationsSet
 export function isLiteratureWork(app: App, file: TFile, settings: BetterCitationsSettings): boolean {
 	const folder = settings.literatureFolder.replace(/\/+$/, '');
 	if (folder === '' || file.path.startsWith(`${folder}/`)) return true;
-	const stored: unknown = app.metadataCache.getFileCache(file)?.frontmatter?.[settings.citationTextProperty];
+	const stored = propertyValue(app.metadataCache.getFileCache(file)?.frontmatter, settings.citationTextProperty);
 	return typeof stored === 'string' && stored.trim() !== '';
 }
 

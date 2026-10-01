@@ -18,7 +18,7 @@ Better Citations works on its own. With [Literature Graph](https://github.com/la
 
 The plugin is not yet in Obsidian's community plugin directory. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lavemile02-afk/Better_Citations_for_Obsidian/releases/latest), put them in `<vault>/.obsidian/plugins/better-citations/`, then enable **Better Citations** in **Settings → Community plugins**. It requires Obsidian 1.13.7 or later, on desktop.
 
-Then, in the plugin settings, choose the **literature folder** (the folder of your literature notes, listed by **Insert citation**) and the **citation language**, and check the names of the properties that hold each work's citation text, authors, year, reference, title and DOI.
+Then, in the plugin settings, choose the **literature folder** (the folder of your literature notes, listed by **Insert citation**; `Literature` by default) and the **citation language**, and check the names of the properties that hold each work's citation text, authors, year, reference, title and DOI (by default `citation-text`, `authors`, `year`, `citation`, `title` and `doi`; the case does not matter, as in Obsidian: `DOI` works too).
 
 ## Citation links
 
@@ -54,8 +54,8 @@ The command also works in the reading view: select the passage and run it (bind 
 
 The text of the link comes from the work's properties:
 
-1. the citation text property (by default `Citation_texte`), such as `(Smith et al., 2020)`;
-2. otherwise the authors and year properties (by default `Auteurs`, as `Family, I., Family, I.`, and `Annee`);
+1. the citation text property (by default `citation-text`), such as `(Smith et al., 2020)`;
+2. otherwise the authors and year properties (by default `authors`, as `Family, I., Family, I.`, and `year`);
 3. otherwise the note name.
 
 The property names, and the language of the citation ("Smith & Jones" or "Smith et Jones"), can be changed in the plugin settings.
@@ -89,7 +89,7 @@ Clicking a citation link opens the note, in a new tab, and selects the passage (
 
 **Update in-text citations (APA)** does the second part alone. A citation link whose text is not a citation of its work (a custom text without the first author and year) is left as written.
 
-Each reference comes from the work's reference property (by default `Citation`); the order and the citations are computed from its authors, year and title properties.
+Each reference comes from the work's reference property (by default `citation`); the order and the citations are computed from its authors, year and title properties.
 
 ### For scripts and AI agents
 
