@@ -1,6 +1,6 @@
 {
 	"name": "better-citations",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Cite a passage of any note with a link that opens it exactly there; preview, check and export citations, and write APA reference lists.",
 	"main": "main.js",
 	"type": "module",
