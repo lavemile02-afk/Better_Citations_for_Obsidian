@@ -112,6 +112,15 @@ Better Citations makes no network request itself.
 
 The format of citation links (`obsidian://cite?note=…&doi=…&occ=…&qe=…&q=…`) is the interface between the two plugins and with scripts: it will stay stable. Other plugins can use `app.plugins.plugins['better-citations'].api`: `openCitation(url, newTab?)` opens a citation link, and `setDoiTitleProvider(provider)` gives the title of works cited by DOI only.
 
+## Privacy and permissions
+
+What the plugin reads, writes and runs, as Obsidian's automatic review lists it:
+
+- **Reading the vault (vault enumeration).** The plugin lists the Markdown notes of the vault and reads them through Obsidian's API: every note for its citation links (to check them and keep them up to date when a note is renamed), and the notes of the literature folder for their properties (citation text, authors, year, reference). **Insert citation** lists the works of the literature folder.
+- **Writing.** Only in your notes, through Obsidian's API, and only when you ask or when a cited note is renamed: the note you are editing (a citation, a reference list, renumbered citation numbers, encoded links), and, with **Update links when a note is renamed**, the citation links of the notes that cite a renamed note. A cited note is never changed. The plugin keeps only its settings in its folder (`data.json`).
+- **Clipboard.** The plugin writes to the clipboard only when you run a copy command (**Copy citation link to selection**, **Copy reference of this work**, **Copy note without citation links**). It looks at the text you paste into a note, during that paste only, to number a pasted citation link to a note that is not literature; it never reads the clipboard otherwise.
+- **No network access**, no telemetry, no account, no advertising.
+
 ## Development
 
 Requires [Node.js](https://nodejs.org/) (current LTS) and npm.
