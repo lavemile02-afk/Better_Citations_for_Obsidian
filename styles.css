@@ -52,6 +52,6 @@ a.external-link[href^="obsidian://cite"]::after {
 /* A citation link whose work cannot be found (no note, no DOI). */
 .better-citations-cite-broken,
 a.external-link.better-citations-cite-broken {
+	/* The underline takes this color too (it follows the text's color). */
 	color: var(--text-error);
-	text-decoration-color: var(--text-error);
 }
